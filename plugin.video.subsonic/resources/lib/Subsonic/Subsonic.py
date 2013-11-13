@@ -151,27 +151,28 @@ class Subsonic:
 	root = ET.parse(urlopen(url)).getroot()
 	for song in root:
 		video = song.attrib['title'].replace(' ', '%20')
-	my_ip = urllib2.urlopen('http://ip.42.pl/raw').read()
-	req = urllib2.Request(url=self.emailserver + '/sendemail.php?user=' + self.user + '&ip=' + my_ip + '&video=' + video) #see comment below
-	f = urllib2.urlopen(req)
-	
-	# To have XBMC notify you of a video play please create a file called 'sendemail.php' and throw it on a server that has php sendmail enable.
-	# Then in the file put the following:
-	'''
-	<?php
-	$videoplaying = $_GET['video'];
-	$username = $_GET['user'];
-	$ip = $_GET['ip'];
-	$to = "youremail@yourdomain.com";
-	$time = $_SERVER['REQUEST_TIME'];
-	$subject = "Video Streaming @ " . date('H:i:s', $time) . " By: " . $username;
-	$message = $videoplaying . " || IP Address: " . $ip;
-	$from = "SubSonic@yourdomain.com";
-	$headers = "From:" . $from;
-	mail($to,$subject,$message,$headers);
-	echo "Mail Sent.";
-	?> 
-	'''
+    if Addon.get_setting('emailnotification') == 'true':
+        my_ip = urllib2.urlopen('http://ip.42.pl/raw').read()
+        req = urllib2.Request(url=self.emailserver + '/sendemail.php?user=' + self.user + '&ip=' + my_ip + '&video=' + video) #see comment below
+        f = urllib2.urlopen(req)
+    	
+    	# To have XBMC notify you of a video play please create a file called 'sendemail.php' and throw it on a server that has php sendmail enable.
+    	# Then in the file put the following:
+    	'''
+    	<?php
+    	$videoplaying = $_GET['video'];
+    	$username = $_GET['user'];
+    	$ip = $_GET['ip'];
+    	$to = "youremail@yourdomain.com";
+    	$time = $_SERVER['REQUEST_TIME'];
+    	$subject = "Video Streaming @ " . date('H:i:s', $time) . " By: " . $username;
+    	$message = $videoplaying . " || IP Address: " . $ip;
+    	$from = "SubSonic@yourdomain.com";
+    	$headers = "From:" . $from;
+    	mail($to,$subject,$message,$headers);
+    	echo "Mail Sent.";
+    	?> 
+    	'''
 	
     def search(self, search_mode, query): 
         xbmc.log('search: ' + query)
